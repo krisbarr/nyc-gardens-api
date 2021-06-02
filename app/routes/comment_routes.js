@@ -27,52 +27,49 @@ const requireToken = passport.authenticate('bearer', { session: false })
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
 
-// GET gardens
-/* router.get('/p78i-pat6.json', (req, res, next) => {
-  Garden.find()
-    .then(gardens => res.json({ gardens: gardens }))
-    .catch(next)
-}) */
-
-/* router.get('/p78i-pat6.json', (req, res, next) => {
-  let zipcode = req.query.zipcode
-  let gardens = Garden.findAll({ zipcode: zipcode }).exec()
-    .then(garden => res.json({ gardens: gardens }))
-    .catch(next)
-}) */
-router.post('/gardens', requireToken, (req, res, next) => {
-  const gardenData = req.body.garden
-  req.body.garden.members = req.user.id
-  Garden.create(gardenData)
-    .then(garden => res.status(201).json({garden: garden}))
-    .catch(next)
-})
-
-router.get('/gardens', (req, res, next) => {
-  Garden.find()
-    .then(gardens => {
-      // `gardens` will be an array of Mongoose documents
-      // we want to convert each one to a POJO, so we use `.map` to
-      // apply `.toObject` to each one
-      return gardens.map(garden => garden.toObject())
-    })
-    // respond with status 200 and JSON of the gardens
-    .then(gardens => res.status(200).json({ gardens: gardens }))
-    // if an error occurs, pass it to the handler
-    .catch(next)
-})
-
-router.patch('/gardens/:id', requireToken, (req, res, next) => {
-  const gardenId = req.params.id
-  const userData = req.user.id
+router.post('/comments', requireToken, (req, res, next) => {
+  const commentData = req.body.comment
+  const gardenId = commentData.gardenId
+  req.body.comment.owner = req.user.id
+  console.log(gardenId)
   Garden.findById(gardenId)
     .then(handle404)
     .then(garden => {
-      garden.members.push(userData)
+      garden.comments.push(commentData)
+      return garden.save()
+    })
+    .then(garden => res.status(201).json({ garden }))
+})
+
+router.delete('/comments/:commentId', requireToken, (req, res, next) => {
+  const commentId = req.params.commentId
+  const gardenId = req.body.comment.gardenId
+  req.body.comment.owner = req.user.id
+  Garden.findById(gardenId)
+    .then(handle404)
+    .then(garden => {
+      garden.comments.id(commentId).remove()
+
       return garden.save()
     })
     .then(() => res.sendStatus(204))
-    .catch(next)
+})
+
+router.patch('/comments/:commentId', requireToken, (req, res, next) => {
+  const commentId = req.params.commentId
+  const commentData = req.body.comment
+  const gardenId = commentData.gardenId
+
+  Garden.findById(gardenId)
+    .then(handle404)
+    .then(garden => {
+      const comment = garden.comments.id(commentId)
+
+      comment.set(commentData)
+
+      return garden.save()
+    })
+    .then(() => res.sendStatus(204))
 })
 
 module.exports = router
