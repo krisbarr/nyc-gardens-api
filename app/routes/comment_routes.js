@@ -42,9 +42,9 @@ router.post('/comments', requireToken, (req, res, next) => {
 })
 
 router.delete('/comments/:commentId', requireToken, (req, res, next) => {
+  console.log(req.body)
   const commentId = req.params.commentId
   const gardenId = req.body.comment.gardenId
-  req.body.comment.owner = req.user.id
   Garden.findById(gardenId)
     .then(handle404)
     .then(garden => {
@@ -59,7 +59,6 @@ router.patch('/comments/:commentId', requireToken, (req, res, next) => {
   const commentId = req.params.commentId
   const commentData = req.body.comment
   const gardenId = commentData.gardenId
-
   Garden.findById(gardenId)
     .then(handle404)
     .then(garden => {
