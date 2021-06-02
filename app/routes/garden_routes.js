@@ -47,7 +47,15 @@ router.post('/gardens', requireToken, (req, res, next) => {
     .then(garden => res.status(201).json({garden: garden}))
     .catch(next)
 })
-
+router.get('/gardens/:id', (req, res, next) => {
+  // req.params.id will be set based on the `:id` in the route
+  Garden.findById(req.params.id)
+    .then(handle404)
+    // if `findById` is succesful, respond with 200 and "garden" JSON
+    .then(garden => res.status(200).json({ garden: garden.toObject() }))
+    // if an error occurs, pass it to the handler
+    .catch(next)
+})
 router.get('/gardens', (req, res, next) => {
   Garden.find()
     .then(gardens => {
