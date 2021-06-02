@@ -2,7 +2,7 @@ const express = require('express')
 // Passport docs: http://www.passportjs.org/docs/
 const passport = require('passport')
 
-// pull in Mongoose model for examples
+// pull in Mongoose model for gardens
 const Garden = require('../models/garden')
 
 // this is a collection of methods that help us detect situations when we need
@@ -16,7 +16,7 @@ const handle404 = customErrors.handle404
 const requireOwnership = customErrors.requireOwnership
 
 // this is middleware that will remove blank fields from `req.body`, e.g.
-// { example: { title: '', text: 'foo' } } -> { example: { text: 'foo' } }
+// { garden: { title: '', text: 'foo' } } -> { garden: { text: 'foo' } }
 const removeBlanks = require('../../lib/remove_blank_fields')
 // passing this as a second argument to `router.<verb>` will make it
 // so that a token MUST be passed for that route to be available
@@ -42,8 +42,23 @@ const router = express.Router()
 }) */
 router.post('/gardens', requireToken, (req, res, next) => {
   const gardenData = req.body.garden
+  req.body.garden.members = req.user.id
   Garden.create(gardenData)
     .then(garden => res.status(201).json({garden: garden}))
+    .catch(next)
+})
+
+router.get('/gardens', (req, res, next) => {
+  Garden.find()
+    .then(gardens => {
+      // `gardens` will be an array of Mongoose documents
+      // we want to convert each one to a POJO, so we use `.map` to
+      // apply `.toObject` to each one
+      return gardens.map(garden => garden.toObject())
+    })
+    // respond with status 200 and JSON of the gardens
+    .then(gardens => res.status(200).json({ gardens: gardens }))
+    // if an error occurs, pass it to the handler
     .catch(next)
 })
 
@@ -52,7 +67,10 @@ router.patch('/gardens/:id', requireToken, (req, res, next) => {
   const userData = req.user.id
   Garden.findById(gardenId)
     .then(handle404)
-    .then(garden => garden.members.push(userData))
+    .then(garden => {
+      garden.members.push(userData)
+      return garden.save()
+    })
     .then(() => res.sendStatus(204))
     .catch(next)
 })

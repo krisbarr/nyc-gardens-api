@@ -1,5 +1,5 @@
-API="http://data.cityofnewyork.us/resource"
-URL_PATH="/p78i-pat6.json"
+API="http://localhost:4741"
+URL_PATH="/gardens"
 
 curl "${API}${URL_PATH}" \
   --include \
