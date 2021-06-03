@@ -3,7 +3,8 @@ const commentSchema = require('./comment')
 
 const gardenSchema = new mongoose.Schema({
   parksId: {
-    type: String
+    type: String,
+    required: true
   },
   name: {
     type: String,

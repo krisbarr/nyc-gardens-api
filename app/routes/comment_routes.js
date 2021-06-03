@@ -31,7 +31,6 @@ router.post('/comments', requireToken, (req, res, next) => {
   const commentData = req.body.comment
   const gardenId = commentData.gardenId
   req.body.comment.owner = req.user.id
-  console.log(gardenId)
   Garden.findById(gardenId)
     .then(handle404)
     .then(garden => {
@@ -42,7 +41,6 @@ router.post('/comments', requireToken, (req, res, next) => {
 })
 
 router.delete('/comments/:commentId', requireToken, (req, res, next) => {
-  console.log(req.body)
   const commentId = req.params.commentId
   const gardenId = req.body.comment.gardenId
   Garden.findById(gardenId)
@@ -70,5 +68,20 @@ router.patch('/comments/:commentId', requireToken, (req, res, next) => {
     })
     .then(() => res.sendStatus(204))
 })
+/* router.get('/comments', requireToken, (req, res, next) => {
+  console.log(req.body.comment)
+  const commentData = req.body.comment
+  const gardenId = commentData.gardenId
+  Garden.findById(gardenId)
+    .then(garden => {
+      // instantiate a variable set equal to the comments for this garden
+      const comments = garden.comments
+      return comments.map(comments => comments.toObject())
+    })
+    // respond with status 200 and JSON of the comments
+    .then(comments => res.status(200).json({ comments: comments }))
+    // if an error occurs, pass it to the handler
+    .catch(next)
+}) */
 
 module.exports = router
