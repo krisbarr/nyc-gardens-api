@@ -42,9 +42,30 @@ const router = express.Router()
 }) */
 router.post('/gardens', requireToken, (req, res, next) => {
   const gardenData = req.body.garden
-  req.body.garden.members = req.user.id
-  Garden.create(gardenData)
-    .then(garden => res.status(201).json({garden: garden}))
+  const parksId = req.body.garden.parksId
+  Garden.find({parksId: parksId})
+    .then(gardens => {
+      console.log(gardens)
+      if (gardens.length === 0) {
+        req.body.garden.members = []
+        req.body.garden.members.push(req.user.id)
+        Garden.create(gardenData)
+          .then(garden => res.status(201).json({garden: garden}))
+          .catch(next)
+      } else {
+        if (gardens[0].members.length > 0 && !gardens[0].members.includes(req.user.id)) {
+          gardens[0].members.push(req.user.id)
+          return gardens[0].save()
+        }
+        // else {
+        //   req.body.garden.members = []
+        //   req.body.garden.members.push(req.user.id)
+        //   Garden.create(gardenData)
+        //     .then(garden => res.status(201).json({garden: garden}))
+        //     .catch(next)
+        // }
+      }
+    })
     .catch(next)
 })
 router.get('/gardens/:id', (req, res, next) => {

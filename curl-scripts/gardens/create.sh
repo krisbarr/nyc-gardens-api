@@ -1,4 +1,4 @@
-# TOKEN="fc31496aa00392a024a2aa10fbfa3a0f" PARKS_ID="XGT082" NAME=""NYCHA - McKinley - Joyful Garden" BOROUGH="X" ZIP_CODE=10456
+# TOKEN="fc31496aa00392a024a2aa10fbfa3a0f" PARKS_ID="XGT082" NAME="NYCHA - McKinley - Joyful Garden" BOROUGH="X" ZIP_CODE=10456
 
 API="http://localhost:4741"
 URL_PATH="/gardens"
