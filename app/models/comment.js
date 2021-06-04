@@ -13,10 +13,6 @@ const commentSchema = new mongoose.Schema({
   body: {
     type: String,
     required: true
-  },
-  subject: {
-    type: String,
-    enum: ['flowers', 'veggies', 'repairs', 'clean-up', 'hours', 'questions']
   }
 },
 {

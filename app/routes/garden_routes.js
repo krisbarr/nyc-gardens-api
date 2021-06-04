@@ -45,7 +45,6 @@ router.post('/gardens', requireToken, (req, res, next) => {
   const parksId = req.body.garden.parksId
   Garden.find({parksId: parksId})
     .then(gardens => {
-      console.log(gardens)
       if (gardens.length === 0) {
         req.body.garden.members = []
         req.body.garden.members.push(req.user.id)
@@ -68,7 +67,7 @@ router.post('/gardens', requireToken, (req, res, next) => {
     })
     .catch(next)
 })
-router.get('/gardens/:id', (req, res, next) => {
+router.get('/gardens/:id', requireToken, (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
   Garden.findById(req.params.id)
     .then(handle404)

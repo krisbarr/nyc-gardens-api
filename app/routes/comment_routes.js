@@ -34,7 +34,7 @@ router.post('/comments', requireToken, (req, res, next) => {
   Garden.findById(gardenId)
     .then(handle404)
     .then(garden => {
-      garden.comments.push(commentData)
+      garden.comments.unshift(commentData)
       return garden.save()
     })
     .then(garden => res.status(201).json({ garden }))

@@ -15,7 +15,6 @@ curl "${API}${URL_PATH}" \
       "title": "'"${TITLE}"'",
       "body": "'"${BODY}"'",
       "gardenId": "'"${GARDEN_ID}"'",
-      "subject": "'"${SUBJECT}"'"
     }
   }'
 
