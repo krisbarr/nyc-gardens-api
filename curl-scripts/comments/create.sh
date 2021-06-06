@@ -14,7 +14,7 @@ curl "${API}${URL_PATH}" \
     "comment": {
       "title": "'"${TITLE}"'",
       "body": "'"${BODY}"'",
-      "gardenId": "'"${GARDEN_ID}"'",
+      "gardenId": "'"${GARDEN_ID}"'"
     }
   }'
 

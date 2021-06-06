@@ -40,9 +40,25 @@ router.post('/comments', requireToken, (req, res, next) => {
     .then(garden => res.status(201).json({ garden }))
 })
 
-router.delete('/comments/:commentId', requireToken, (req, res, next) => {
+router.get('/comments/:commentId/:gardenId', requireToken, (req, res, next) => {
   const commentId = req.params.commentId
-  const gardenId = req.body.comment.gardenId
+  const gardenId = req.params.gardenId
+  // const commentData = req.body.comment
+  // const gardenId = commentData.gardenId
+  // console.log('this is commentId, commentData, gardenId', commentId, commentData, gardenId)
+  Garden.findById(gardenId)
+    .then(handle404)
+    .then(garden => {
+      console.log(garden)
+      console.log(commentId)
+      res.status(200).json({ comment: garden.comments.filter(comment => comment._id !== commentId) })
+    })
+//  res.status(200).json({ commentId, commentData, gardenId })
+})
+
+router.delete('/comments/:commentId/:gardenId', requireToken, (req, res, next) => {
+  const commentId = req.params.commentId
+  const gardenId = req.params.gardenId
   Garden.findById(gardenId)
     .then(handle404)
     .then(garden => {
@@ -53,7 +69,7 @@ router.delete('/comments/:commentId', requireToken, (req, res, next) => {
     .then(() => res.sendStatus(204))
 })
 
-router.patch('/comments/:commentId', requireToken, (req, res, next) => {
+router.patch('/comments/:commentId/:gardenId', requireToken, (req, res, next) => {
   const commentId = req.params.commentId
   const commentData = req.body.comment
   const gardenId = commentData.gardenId
