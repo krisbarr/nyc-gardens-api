@@ -40,22 +40,6 @@ router.post('/comments', requireToken, (req, res, next) => {
     .then(garden => res.status(201).json({ garden }))
 })
 
-router.get('/comments/:commentId/:gardenId', requireToken, (req, res, next) => {
-  const commentId = req.params.commentId
-  const gardenId = req.params.gardenId
-  // const commentData = req.body.comment
-  // const gardenId = commentData.gardenId
-  // console.log('this is commentId, commentData, gardenId', commentId, commentData, gardenId)
-  Garden.findById(gardenId)
-    .then(handle404)
-    .then(garden => {
-      console.log(garden)
-      console.log(commentId)
-      res.status(200).json({ comment: garden.comments.filter(comment => comment._id !== commentId) })
-    })
-//  res.status(200).json({ commentId, commentData, gardenId })
-})
-
 router.delete('/comments/:commentId/:gardenId', requireToken, (req, res, next) => {
   const commentId = req.params.commentId
   const gardenId = req.params.gardenId
@@ -69,20 +53,35 @@ router.delete('/comments/:commentId/:gardenId', requireToken, (req, res, next) =
     .then(() => res.sendStatus(204))
 })
 
-router.patch('/comments/:commentId/:gardenId', requireToken, (req, res, next) => {
+router.patch('/comments/:commentId/:gardenId/edit', requireToken, (req, res, next) => {
   const commentId = req.params.commentId
-  const commentData = req.body.comment
-  const gardenId = commentData.gardenId
+  const commentData = req.body
+  const gardenId = req.params.gardenId
+  console.log('this is gardenId', gardenId)
   Garden.findById(gardenId)
     .then(handle404)
     .then(garden => {
       const comment = garden.comments.id(commentId)
-
+      console.log(commentData)
       comment.set(commentData)
 
       return garden.save()
     })
     .then(() => res.sendStatus(204))
+})
+
+router.get('/comments/:commentId/:gardenId', requireToken, (req, res, next) => {
+  const commentId = req.params.commentId
+  const gardenId = req.params.gardenId
+  // const commentData = req.body.comment
+  // const gardenId = commentData.gardenId
+  // console.log('this is commentId, commentData, gardenId', commentId, commentData, gardenId)
+  Garden.findById(gardenId)
+    .then(handle404)
+    .then(garden => {
+      res.status(200).json({ comment: garden.comments.id(commentId) })
+    })
+//  res.status(200).json({ commentId, commentData, gardenId })
 })
 /* router.get('/comments', requireToken, (req, res, next) => {
   console.log(req.body.comment)

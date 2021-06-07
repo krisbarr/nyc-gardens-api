@@ -67,7 +67,19 @@ router.post('/gardens', requireToken, (req, res, next) => {
     })
     .catch(next)
 })
-router.get('/gardens/:id', requireToken, (req, res, next) => {
+router.patch('/gardens/:id', requireToken, (req, res, next) => {
+  const gardenId = req.params.id
+  const userData = req.user.id
+  Garden.findById(gardenId)
+    .then(handle404)
+    .then(garden => {
+      garden.members.push(userData)
+      return garden.save()
+    })
+    .then(() => res.sendStatus(204))
+    .catch(next)
+})
+router.get('/gardens/:id', (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
   Garden.findById(req.params.id)
     .then(handle404)
@@ -87,19 +99,6 @@ router.get('/gardens', (req, res, next) => {
     // respond with status 200 and JSON of the gardens
     .then(gardens => res.status(200).json({ gardens: gardens }))
     // if an error occurs, pass it to the handler
-    .catch(next)
-})
-
-router.patch('/gardens/:id', requireToken, (req, res, next) => {
-  const gardenId = req.params.id
-  const userData = req.user.id
-  Garden.findById(gardenId)
-    .then(handle404)
-    .then(garden => {
-      garden.members.push(userData)
-      return garden.save()
-    })
-    .then(() => res.sendStatus(204))
     .catch(next)
 })
 
